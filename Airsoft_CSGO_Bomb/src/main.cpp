@@ -6,6 +6,7 @@
 const int i2c_addr = 0x26;
 LiquidCrystal_I2C lcd(0x26,20,4);
 
+//Pins
 const int led_pin = 4;
 const int buzzer_pin = 5;
 const int selectButton = 21;
@@ -14,9 +15,9 @@ const int downButton = 20;
 
 //Values
 int codeLength = 8;
-int bombtime = 60; // set the time the defenders have to defuse the bomb
+int bombtime = 300; // set the time the defenders have to defuse the bomb
 int planttime = 600; // set the time the attackers have to plant the bomb
-int buzzerVolume = 5;  // Initial volume (0 to 255)
+int buzzerVolume = 255;  // Initial volume (0 to 255)
 
 //data tracking
 String pad;
@@ -24,8 +25,10 @@ String bombcode;
 String displaycode;
 char keypressed;
 bool isTimerRunning = false;
+bool isPlanted = false;
 unsigned long previousMillis = 0; // Store the last time when the LED was updated
 const long interval = 1000;       // Interval in milliseconds
+unsigned long currentMillis = millis();
 bool isBlinking = false;
 
 const byte numRows = 4;
@@ -139,6 +142,7 @@ void starttimer() {
 
       bombtime -= 1;            // Removes one from the timer
       BombTime(bombtime);
+      blinking();
       
       Serial.println(bombtime); // Prints the time
     }
@@ -162,11 +166,25 @@ void displayCode() {
   }
 }
 
-void readKeypad() {
-  keypressed = myKeypad.getKey(); //deteksi penekanan keypad
+void animatedLoading(int x, int y, int numDots, int delayTime) {
+  lcd.setCursor(x, y);
   
-  static unsigned long wrongCodeDisplayTime = 0; // Store the time the "Wrong code" message was displayed
-  const unsigned long wrongCodeDisplayDuration = 1000; // Duration for which the "Wrong code" message is displayed
+  for (int i = 0; i < numDots; i++) {
+    lcd.print(".");
+    delay(delayTime);
+  }
+  
+  lcd.setCursor(x, y);
+  for (int i = 0; i < numDots; i++) {
+    lcd.print(" ");
+    delay(delayTime);
+    lcd.print(".");
+    delay(delayTime);
+  }
+}
+
+void readKeypad() {
+  keypressed = myKeypad.getKey(); // Detect keypad press
   
   if (keypressed != NO_KEY) {  // Check if a valid key is pressed
     String konv = String(keypressed);
@@ -176,17 +194,14 @@ void readKeypad() {
     if (pad.length() > 0 && pad != bombcode.substring(0, pad.length())) {
       lcd.setCursor(0, 1);
       lcd.print("Wrong code  ");
-
-      // Record the time the "Wrong code" message was displayed
-      wrongCodeDisplayTime = millis();
       
       pad = "";  // Clear the pad string
-      if (millis() - wrongCodeDisplayTime >= wrongCodeDisplayDuration) {
-        lcd.clear();
-      }
+
+      
     }
   }
 }
+
 
 void setup() {
   Serial.begin(9600);
@@ -219,8 +234,9 @@ void setup() {
 }
 
 void loop() {
+  unsigned long currentMillis = millis();
+
   if (isTimerRunning == true) {
-    blinking(); // Call the starttimer function if the timer is running
     starttimer();
     displayCode();
   } else {
