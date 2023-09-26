@@ -1,6 +1,6 @@
 # CSGO Bomb Airsoft
 
-This project is a open source csgo bomb for airsoft using arduino with some bomb gamemodes like CSGO and Search and destroy in 2 vers of them, Code and Hold
+This project is a open source csgo bomb for airsoft using a arduino and some bunch of other parts, it got some bomb gamemodes like CSGO and Search and destroy in 2 vers of them, Code and Hold
 
 ### Features 
 CSGO Code/hold
