@@ -36,7 +36,7 @@ struct MenuItem {
 int timeToPlant = 10; // The amount of time you have to plant the bomb (10mins)
 int timeToDefuse = 10; // The amount of time you have to defuse the bomb (10mins)
 int codeLenght = 4; // Lenght of the code (4)
-int gamemode = 2; // This creates a modifiable character array. //TODO
+int gamemode = 0; // This creates a modifiable character array. //TODO
 int buzzerPitch = 2; // Pitch/audio of the buzzer (5)
 int mistakeTime = 0; // Removes time from counter as a punchment for doing it wrong (0sec)
 int delayForNumbers = 2; // The amount of delay for the next number to be showed in code gamemodes (2sec)
@@ -50,7 +50,6 @@ String bombcode; // The code that the bomb gen
 String displaycode; // The number that will be displayed in the connor in code gamemodes
 char keypressed; // The lastest key that have been pressed
 bool isLocked = false; // the toggle for the menu being locked or not locked while playing
-bool disableScrollInGame = false; // Stops the scrolling in the menus when the game is being played
 unsigned long currentMillis; // The current time from the boot up on the bomb
 int plantTime = timeToPlant*60; // The amount of time you have to plant the bomb in sec (timeToPlant*60)
 int defuseTime = timeToDefuse*60; // The amount of time you have to defuse the bomb in sec (timeToDefuse*60)
@@ -513,6 +512,7 @@ void loop() {
             loadingAnimationForCode = false;
             gameState = BOMB_DEFUSED;
             editMode = true;
+            scrollingEnabled = false;
 
             //Stop led and buzzer
             digitalWrite(ledPin, LOW);
@@ -569,7 +569,7 @@ void loop() {
 
   //Menu button handleing
   if (isLocked == false) {
-    if (disableScrollInGame == false) {
+    if (scrollingEnabled != false) {
       if (digitalRead(upButton) == LOW) {
         if (selectedMenuItem > 0 && scrollingEnabled) {
           selectedMenuItem--;
@@ -696,7 +696,6 @@ void loop() {
     
     if (digitalRead(selectButton) == LOW) {
       const MenuItem selectedItem = currentMenu[selectedMenuItem];
-      disableScrollInGame = false;
       updateMenu();
 
       
@@ -704,8 +703,7 @@ void loop() {
         // Handle saving the edited value
         scrollingEnabled = true;
         editMode = false;
-        isPaused = true;
-        disableScrollInGame = false;
+        isPaused = false;
         editingSetting= 0 ;
         updateMenu();
       } else {
@@ -726,21 +724,25 @@ void loop() {
 void startAction() {
   Serial.println("Start action");
   pad="";
-  if (gameState == GAME_NOT_STARTED && isPaused) {
+  if (gameState == GAME_NOT_STARTED || isPaused) {
     defuseTime = timeToDefuse*60;
     plantTime = timeToPlant*60;
     gameState = GAME_STARTED;
-    isPaused = false;
+    editMode = true;
 
     if (gamemode == 0) {
       getBombCode();
       
       lcd.clear();
-      disableScrollInGame=true;
+      scrollingEnabled = false;
       gameState = GAME_STARTED;
 
     }
+  } else {
+    Serial.println("Game is started");
+    isPaused = true;
   }
+
   mainMenu[0] = {"Continue", nullptr, nullptr, startAction};
   mainMenu[1] = {"Restart", nullptr, nullptr, resetGameAction};
   mainMenu[2] = {"Info", nullptr, nullptr, infoAction};
