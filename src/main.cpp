@@ -8,6 +8,7 @@
 const int i2c_addr = 0x26;
 LiquidCrystal_I2C lcd(0x26, 20, 4);
 
+//keeps data for the keypad rows and cols
 const byte numRows = 4;
 const byte numCols = 3;
 char keymap[numRows][numCols] =
@@ -32,38 +33,30 @@ struct MenuItem {
 };
 
 //Setting values
-int timeToPlant = 10; // Initialize with a default value
-int timeToDefuse = 10; // Initialize with a default value
-int codeLenght = 8;
-enum gamemode {
-  CSGO_Code,
-  CSGO_Hold,
-  Defense_Code,
-  Defense_Hold
-};
-int buzzerPitch = 2;
-int mistakeTime = 0;
-int delayForNumbers = 1;
-bool autoCheck = true;
-bool lockedMenu = false;
-bool backLight = true;
+int timeToPlant = 10; // The amount of time you have to plant the bomb (10mins)
+int timeToDefuse = 10; // The amount of time you have to defuse the bomb (10mins)
+int codeLenght = 4; // Lenght of the code (4)
+int gamemode = 2; // This creates a modifiable character array. //TODO
+int buzzerPitch = 2; // Pitch/audio of the buzzer (5)
+int mistakeTime = 0; // Removes time from counter as a punchment for doing it wrong (0sec)
+int delayForNumbers = 2; // The amount of delay for the next number to be showed in code gamemodes (2sec)
+bool autoCheck = true; // Auto checks if the code is right in the end so you dont need to press # to check it manually (True)
+bool lockedMenu = false; // Locked Menu locks the menu ingame so player wont press it by mistake to unlock press * and # at the same time (False)
+bool backLight = true; // Backlight for the LCD Display idk why you would turn it off but here you go (True)
 
 //data tracking
-String pad;
-String bombcode;
-String displaycode;
-char keypressed;
-bool isLocked = false;
-bool isTimerRunning = false;
-bool isPlanted = false;
-bool isBlinking = false;
-bool disableScrollInGame = false;
-unsigned long currentMillis;
-int defuseTime = timeToDefuse*60;
-int plantTime = timeToPlant*60;
-unsigned long previousMillis = 0;
-bool loadingAnimationForCode = false;
-bool gamePlayed = false;
+String pad; // Stores the data of the keypad
+String bombcode; // The code that the bomb gen
+String displaycode; // The number that will be displayed in the connor in code gamemodes
+char keypressed; // The lastest key that have been pressed
+bool isLocked = false; // the toggle for the menu being locked or not locked while playing
+bool disableScrollInGame = false; // Stops the scrolling in the menus when the game is being played
+unsigned long currentMillis; // The current time from the boot up on the bomb
+int plantTime = timeToPlant*60; // The amount of time you have to plant the bomb in sec (timeToPlant*60)
+int defuseTime = timeToDefuse*60; // The amount of time you have to defuse the bomb in sec (timeToDefuse*60)
+unsigned long previousMillis = 0; // time thingy
+bool loadingAnimationForCode = false; // Loading animation for the code in code gamemodes
+bool isPaused = true; // Stops everything related to games
 
 // Define game states
 enum GameState {
@@ -79,7 +72,6 @@ GameState gameState = GAME_NOT_STARTED;
 bool editMode = false; // Flag to indicate if you're in edit mode
 bool scrollingEnabled = true; // Flag to indicate if scrolling is enabled
 int editingSetting = 0; // Value to keep track of what setting is being changed
-const int settingsAddress = 0;  // Address to store settings in EEPROM
 
 //Yes make code not break and look pretty
 void loadingAnimation(int x, int y);
@@ -93,7 +85,7 @@ void settingsAction();
 void presetsAction();
 
 void backAction();
-void saveSettings();
+void changeGamemode();
 void changingValueAction(const char* text, int action, int min, int max, const char* units, int id);
 void saveAsPresetAction();
 void autoCheckAction();
@@ -101,6 +93,7 @@ void lockedMenuAction();
 void backLightAction();
 void useLastProfileAction();
 void supportAction();
+void saveSettings();
 void factoryResetAction();
 
 void setTimeCodes(int timeToPlant, int timeToDefuse);
@@ -116,6 +109,7 @@ MenuItem mainMenu[] = {
 
 MenuItem settingMenu[] = {
   {"Back/Save", nullptr, nullptr, backAction},
+  {"Gamemodes", &gamemode, nullptr, []() { changingValueAction("Gamemodes", gamemode, 0, 3, "", 7); }},
   {"Time to plant", &timeToPlant, nullptr, []() { changingValueAction("Time to plant", timeToPlant, 0, 60, " Mins", 1); }},
   {"Time to defuse", &timeToDefuse, nullptr, []() { changingValueAction("Time to defuse", timeToDefuse, 0, 60, " Mins", 2); }},
   {"Code length", &codeLenght, nullptr, []() { changingValueAction("Code lenght", codeLenght, 0, 20, "", 3); }},
@@ -214,18 +208,16 @@ void displayCode() {
 void readKeypad() {
   keypressed = myKeypad.getKey(); // Detect keypad press
 
-  if (isTimerRunning == true) {
+  if (gameState != GAME_NOT_STARTED || BOMB_DEFUSED) {
     if (keypressed != NO_KEY) {  // Check if a valid key is pressed
       String konv = String(keypressed);
       loadingAnimationForCode = true;
 
-      if (isPlanted==false) {
       digitalWrite(ledPin, HIGH);
       analogWrite(buzzerPin, buzzerPitch);
       delay(100);
       digitalWrite(ledPin, LOW);
       analogWrite(buzzerPin, 0);
-      }
 
       if (keypressed == '*') {
         // Remove the last character from the pad (if it's not empty)
@@ -268,7 +260,7 @@ int lerp(int start, int end, float t) {
 }
 
 void timer() {
-  if (isPlanted && defuseTime > 0) {
+  if (gameState == BOMB_PLANTED && defuseTime > 0) {
     unsigned long currentMillis = millis();
     if (defuseTime <= 60) {
     int blinkInterval = lerp(0, 1000, defuseTime / 60.0);
@@ -440,6 +432,7 @@ void setup() {
   loadSettingsFromEEPROM();
   // Gets random number from the noise of the analog port
   randomSeed(analogRead(0) + millis());;
+  GameState gameState = GAME_NOT_STARTED;
 
   //display
   lcd.init();
@@ -461,6 +454,7 @@ void setup() {
   lcd.setCursor(4, 2);
   lcd.print("CSGO Bomb V1");
   delay(1000);
+  gameState = GAME_NOT_STARTED;
   updateMenu();
 }
 
@@ -483,21 +477,20 @@ void changeValueMenu(const char* name, int& value, int minVal, int maxVal, const
 }
 
 void loop() {
-  //Keeps the timer running
-  if (loadingAnimationForCode == true) {
-    loadingAnimation(0,0);
-  }
-
-  //Reads keypad for inputs
-  readKeypad();
+  readKeypad(); // Reads keypad for inputs
 
   //Unlock locked menu
   if (keypressed == '*' || keypressed == '#') {
     isLocked = false;
   }
 
+  //Loading animation for the code
+  if (loadingAnimationForCode == true) {
+    loadingAnimation(0,0);
+  }
+
   //Checks if code is right
-  if (gameState == GAME_NOT_STARTED) {
+  if (gameState != GAME_NOT_STARTED && !isPaused) {
     lcd.setCursor(0, 3);
     lcd.print(pad);
 
@@ -558,7 +551,7 @@ void loop() {
           }
         } else {
           // Incorrect code
-          if (isPlanted) {
+          if (gameState == BOMB_PLANTED) {
             defuseTime -= mistakeTime;
             defuseTime = max(defuseTime, 0);
           } else {
@@ -622,8 +615,14 @@ void loop() {
           };
           case 6:
           {
-            delayForNumbers = min(delayForNumbers + 1, 10); // Decrement and limit the value
-            changeValueMenu("Delay for numbers", delayForNumbers, 0, 10, " sec", 6);
+            delayForNumbers = min(delayForNumbers + 1, 30); // Decrement and limit the value
+            changeValueMenu("Delay for numbers", delayForNumbers, 0, 30, " sec", 6);
+            break;
+          };
+          case 7:
+          {
+            gamemode = min(gamemode + 1, 3); // Decrement and limit the value
+            changeValueMenu("Gamemodes", gamemode, 0, 3, "", 7);
             break;
           };
           }
@@ -682,6 +681,12 @@ void loop() {
               changeValueMenu("Delay for numbers", delayForNumbers, 0, 30, " sec", 6);
               break;
             };
+            case 7:
+            {
+              gamemode = max(gamemode - 1, 0); // Decrement and limit the value
+              changeValueMenu("Gamemodes", gamemode, 0, 3, "", 7);
+              break;
+            };
             }
             delay(100);
           }
@@ -693,11 +698,14 @@ void loop() {
       const MenuItem selectedItem = currentMenu[selectedMenuItem];
       disableScrollInGame = false;
       updateMenu();
+
       
       if (editMode) {
         // Handle saving the edited value
         scrollingEnabled = true;
         editMode = false;
+        isPaused = true;
+        disableScrollInGame = false;
         editingSetting= 0 ;
         updateMenu();
       } else {
@@ -718,17 +726,18 @@ void loop() {
 void startAction() {
   Serial.println("Start action");
   pad="";
-  if (gameState == GAME_NOT_STARTED) {
+  if (gameState == GAME_NOT_STARTED && isPaused) {
     defuseTime = timeToDefuse*60;
     plantTime = timeToPlant*60;
     gameState = GAME_STARTED;
+    isPaused = false;
 
     if (gamemode == 0) {
       getBombCode();
       
       lcd.clear();
       disableScrollInGame=true;
-      isTimerRunning=true;
+      gameState = GAME_STARTED;
 
     }
   }
@@ -751,8 +760,7 @@ void resetGameAction() {
   mainMenu[2] = {"Setting", nullptr, nullptr, settingsAction};
   mainMenu[3] = {"Presets", nullptr, nullptr, presetsAction};
   mainMenu[4] = {"Support", nullptr, nullptr, supportAction};
-  isPlanted = false;
-  gamePlayed = false;
+  gameState = GAME_NOT_STARTED;
   defuseTime = timeToDefuse*60;
   plantTime = timeToPlant*60;
   updateMenu(); // Update the menu display
@@ -767,11 +775,19 @@ void infoAction() {
   switch (gamemode)
   {
   case 0: {
-    lcd.print("Code");
+    lcd.print("CSGO Code");
     break;
   }
   case 1: {
-    lcd.print("Hold");
+    lcd.print("CSGO Hold");
+    break;
+  }
+  case 2: {
+    lcd.print("Defense Code");
+    break;
+  }
+  case 3: {
+    lcd.print("Defense Hold");
     break;
   }
   default:
