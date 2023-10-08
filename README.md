@@ -12,16 +12,29 @@ This project is an open-source airsoft bomb simulator inspired by CSGO, utilizin
 Please note that I am not a professional programmer or designer. This project was born out of a passion for fun and a desire to support a local airsoft field with a new bomb simulator. The code and 3D models may not be optimized or perfect, but they "work" for their intended purpose. Feel free to tweak and adjust as needed to match your specific parts and requirements, as this project is about creativity and enjoyment.
 
 ## Table of content
-- [Gamemodes](#gamemodes)
+- [Gamemodes](#gamemode)
     - [Counter Strike](#counter-strike)
         - [Code](#code)
         - [Hold](#hold)
     - [Search and destory](#search-and-destory)
 - [Settings](#settings)
-    - [Gamemodes](#settings-gamemodes)
+    - [Gamemode](#gamemode)
+    - [Time to plant](#time-to-plant)
+    - [Time to Defuse](#time-to-defuse)
+    - [Code Lenght](#code-length)
+    - [Mistake](#mistake)
+    - [Delay for code](#delay-for-numbers)
+    - [Auto check](#auto-check)
+    - [Locked menu](#locked-menu)
+    - [Buzzer pitch](#buzzer-pitch)
+    - [Back light](#back-light)
+    - [Save as default](#save-as-default)
+    - [Factory reset](#factory-reset)
 - [Presets](#presets)
+    - [User Default](#user-default)
+    - [GM/TTP/TTD/CL/DFN](#gmttpttdcldfn)
 
-## Gamemodes.
+## Gamemodes
 * ### Counter Strike
 CS Code is a gamemode like the video game counter strike where you have 2 teams one attacking team and one defending team where the goal for the attacking team is plant the bomb on a Bomb site/Location, where the defending team have to stop the attackers from planting the bomb or defuse the bomb if the attacking team have planted the bomb on the bomb site
 * ##### Code
@@ -61,7 +74,7 @@ DisplayInfo can display some text for the players to read for example it could b
 The ### is the progress of the bomb planted and the --- is how much is left
 
 - # Settings
-- #### [Gamemodes](#settings-gamemodes)
+- #### Gamemode
     This setting allowes you can change what game mode you wanna play on the bomb
     0 = CS Code
     1 = CS Hold
@@ -76,9 +89,6 @@ The ### is the progress of the bomb planted and the --- is how much is left
 * #### Code length
     This setting changes the lenght of the code on the bomb 
     This value ranges from 1 to 20 character long
-* #### Buzzer pitch
-    The buzzer pitch can go from 0 to 255 and it changes the pitch of the buzzer so the user of the bomb can pick a sound they like :P
-    This value ranges from 0 to 255
 * #### Mistake
     This is a setting that gives the players a punishment if they type the wrong code in it can be turned off by changing it to 0
     This value range from 0 to 60sec
@@ -92,6 +102,9 @@ The ### is the progress of the bomb planted and the --- is how much is left
     Locked menu is a importen setting if you dont want players you go in the menu by acident or change values by mistake
     If ON you wont be able to press the Knob to go back in the menu but you need to press * and # at the same time to unlock the bomb again
     This value can be ON or OFF
+  * #### Buzzer pitch
+    The buzzer pitch can go from 0 to 255 and it changes the pitch of the buzzer so the user of the bomb can pick a sound they like :P
+    This value ranges from 0 to 255
 * #### Back light
     Back light allowes you to turn on or off the back light of the LCD display
     This value can be ON or OFF
