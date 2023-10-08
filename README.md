@@ -32,7 +32,7 @@ Please note that I am not a professional programmer or designer. This project wa
     - [Factory reset](#factory-reset)
 - [Presets](#presets)
     - [User Default](#user-default)
-    - [GM/TTP/TTD/CL/DFN](#gmttpttdcldfn)
+    - [GM/TTP/TTD/CL/DFN/M](#gmttpttdcldfnm)
 
 ## Gamemodes
 * ### Counter Strike
