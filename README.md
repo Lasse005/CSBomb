@@ -30,10 +30,10 @@ This setting allowes you can change what game mode you wanna play on the bomb
 1 = <abbr title="Counter Strike">CS</abbr> Hold
 2 = <abbr title="Search and destory">SAD</abbr> Code
 3 = <abbr title="Search and destory">SAD</abbr> Hold
-#### Time to Plant
+- #### Time to Plant
 This is the time the attacking team have to plant the bomb before the timer runs out and they will lose, 
 This setting can be 1min to 60mins long
-#### Time to Defuse
+- #### Time to Defuse
 This is the time the defending team have to defuse the bomb before it blows up and the attacking team will win, 
 This setting can be 1min to 60mins long
 #### Code length
