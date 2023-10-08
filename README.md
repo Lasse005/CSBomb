@@ -12,25 +12,53 @@ This project is an open-source airsoft bomb simulator inspired by CSGO, utilizin
 Please note that I am not a professional programmer or designer. This project was born out of a passion for fun and a desire to support a local airsoft field with a new bomb simulator. The code and 3D models may not be optimized or perfect, but they "work" for their intended purpose. Feel free to tweak and adjust as needed to match your specific parts and requirements, as this project is about creativity and enjoyment.
 
 ## Table of content
-* [Installation](#installation)
-- [Gamemodes](#gamemodes)
-    - [Counter Strike](#Counter-Strike)
-    - [Search and destory](#Search-and-destory)
+- [Gamemodes](#gamemodes )
+    - [Counter Strike](#counter-strike)
+        - [Code](#code)
+        - [Hold](#hold)
+    - [Search and destory](#search-and-destory)
 - [Settings](#settings)
+    - [Gamemodes](#gamemodes)
 - [Presets](#presets)
 
-
-gamemodes
-=========
-Installation
-============
-
+## Gamemodes 
 * ### Counter Strike
 CS Code is a gamemode like the video game counter strike where you have 2 teams one attacking team and one defending team where the goal for the attacking team is plant the bomb on a Bomb site/Location, where the defending team have to stop the attackers from planting the bomb or defuse the bomb if the attacking team have planted the bomb on the bomb site
 * ##### Code
 Code is a gamemode in which a random code is generated for the bomb. Players must input this code into the bomb to arm it. The bomb's code will be displayed in the top left corner, revealing one number at a time until the entire code is entered to either plant or defuse the bomb.
+
+```bash
++--------------------+
+|X                   |
+|DisplayInfo  Timer  |
+|             00:00  |
+|Y                   |
++--------------------+
+```
+Timer is how much time left
+
+X is the number displayed in the top left connor
+
+Y is the code entered so far
+
+DisplayInfo can display some text for the players to read for example it could be Bomb planted or Wrong code
+
 * #### Hold
 Hold is a gamemode wehre you have to hold a button on the keypad to start arm the bomb, it will show a prograss bar on the display of the bomb where it slowly ticks up to 100% armed and the bomb will go into defuse mode where the defending team will have to hold the botton to defuse it and stop the attacking team from winning, if you let go of the botton the prograss will slowly go down to 0% again
+
+```bash
++--------------------+
+|                    |
+|DisplayInfo  Timer  |
+|             00:00  |
+| #############----- |
++--------------------+
+```
+Timer is how much time left
+
+DisplayInfo can display some text for the players to read for example it could be Bomb planted or Wrong code
+
+The ### is the progress of the bomb planted and the --- is how much is left
 
 - # Settings
 - #### Gamemodes
