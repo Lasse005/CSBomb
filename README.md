@@ -116,10 +116,11 @@ The ### is the progress of the bomb planted and the --- is how much is left
 Presets is a menu for preset settings for gamemodes where its quick way of changing settings without going into setting and doing all manually
 * #### User Default
 Uses the default setting that is used when booting up
-* #### GM/TTP/TTD/CL/DFN
-This is the format i use to say the presets without typing everything out
-GM = the Gamemode
-TTP = Time to Plant
-TTD = Time to Defuse
-CL = Code lenght
-DFN = Delay for numbers
+* #### GM/TTP/TTD/CL/DFN/M
+This is the format i use to say the presets without typing everything out,
+GM = the Gamemode,
+TTP = Time to Plant,
+TTD = Time to Defuse,
+CL = Code lenght,
+DFN = Delay for numbers,
+M = Mistake
