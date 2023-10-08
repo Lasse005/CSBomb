@@ -74,11 +74,11 @@ DisplayInfo can display some text for the players to read for example it could b
 The ### is the progress of the bomb planted and the --- is how much is left
 
 - # Settings
-- #### Gamemode
-    This setting allowes you can change what game mode you wanna play on the bomb
-    0 = CS Code
-    1 = CS Hold
-    2 = SAD Code
+* #### Gamemode
+    This setting allowes you can change what game mode you wanna play on the bomb,
+    0 = CS Code,
+    1 = CS Hold,
+    2 = SAD Code,
     3 = SAD Hold
 * #### Time to Plant
     This is the time the attacking team have to plant the bomb before the timer runs out and they will lose, 
