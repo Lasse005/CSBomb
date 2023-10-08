@@ -12,13 +12,13 @@ This project is an open-source airsoft bomb simulator inspired by CSGO, utilizin
 Please note that I am not a professional programmer or designer. This project was born out of a passion for fun and a desire to support a local airsoft field with a new bomb simulator. The code and 3D models may not be optimized or perfect, but they "work" for their intended purpose. Feel free to tweak and adjust as needed to match your specific parts and requirements, as this project is about creativity and enjoyment.
 
 ## Table of content
-- [Gamemodes](#gamemodes )
+- [Gamemodes](#gamemodes)
     - [Counter Strike](#counter-strike)
         - [Code](#code)
         - [Hold](#hold)
     - [Search and destory](#search-and-destory)
 - [Settings](#settings)
-    - [Gamemodes](#gamemodes)
+    - [Gamemodes](####gamemodes)
 - [Presets](#presets)
 
 ## Gamemodes 
