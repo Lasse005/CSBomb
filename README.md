@@ -73,6 +73,42 @@ DisplayInfo can display some text for the players to read for example it could b
 
 The ### is the progress of the bomb planted and the --- is how much is left
 
+- # Main menu
+  - ## Start
+    Start is the button that starts everything in the bomb, when you press it, it will load take you to a ready screen where the players can press any button to start the timer on the bomb when they hear the start tone from the field
+    ```bash
+    +--------------------+
+    |                    |
+    |  Press any button  |
+    |  on the keypad to  |
+    |       start        |
+    +--------------------+
+    ```
+    By press any botton on the keypad it will start the bomb's timer,
+    if you want to go back you can always press the knob to go back if you need to do that
+  - ## Info
+    The info screen will show some basic info about the bomb with some useful info about the setup on it
+    ```bash
+    +--------------------+
+    |Gamemode: CS CODE   |
+    |Time to plant: 10   |
+    |Time to defuse: 10  |
+    |Code lenght: 4      |
+    +--------------------+
+    ```
+    The code lenght in the info screen can also display the time it takes to plant the bomb in Hold gamemode
+  - ## Settings
+    This menu is where you can change the values of the bomb with how much time you have to get the bomb planted or defused and everything else for it
+ 
+    In the setting menu if you wanna save the setting as the default you need to scroll all the way to the bottom until you see a botton called Save as default, this make it so what ever you have the settings as right now it will boot up with those setting for the next time you use the bomb
+
+    You can find a list of all the settings [here](Settings) where you can read more about the settings itself
+
+  - ## Presets
+  This menu is used for some quick settings for the bomb so you can quickly change them on the fly without going into setting and do it all manuanlly
+
+  You will see a list of items with some presets the format it shows up is what i call [GM/TTP/TTD/CL/DFN/M](#gmttpttdcldfnm) This mean GameMode/TimeToPlant/TimeToDefuse/CodeLenght/DelayForNumbers/Mistake
+
 - # Settings
 * #### Gamemode
     This setting allowes you can change what game mode you wanna play on the bomb,
