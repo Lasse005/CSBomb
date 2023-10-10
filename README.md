@@ -138,7 +138,7 @@ The ### is the progress of the bomb planted and the --- is how much is left
     Locked menu is a importen setting if you dont want players you go in the menu by acident or change values by mistake
     If ON you wont be able to press the Knob to go back in the menu but you need to press * and # at the same time to unlock the bomb again
     This value can be ON or OFF
-  * #### Buzzer pitch
+* #### Buzzer pitch
     The buzzer pitch can go from 0 to 255 and it changes the pitch of the buzzer so the user of the bomb can pick a sound they like :P
     This value ranges from 0 to 255
 * #### Back light
