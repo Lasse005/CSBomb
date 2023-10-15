@@ -425,7 +425,6 @@ void updateMenu() {
 
 //Setup
 void setup() {
-
   //data things to start up
   Serial.begin(9600);
   loadSettingsFromEEPROM();
