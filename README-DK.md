@@ -1,43 +1,44 @@
-# Airsoft CS Bomb
+# Airsoft CS-bombe
 
-Dette projekt er et open source airsoft bombesimulator inspireret af CSGO, der bruger Arduino og forskellige komponenter. Den indeholder flere spiltilstande som Counter Strike og Search and Destroy, hver med to variationer: Kode og Hold. Bomben har en indstillingsmenu, der kan tilpasses, så man hurtigt kan foretage justeringer uden at omprogrammere Arduinoen. 
+Dette projekt er en open-source airsoft-bombe-simulator inspireret af CSGO og bruger Arduino og forskellige komponenter. Den har flere spiltilstande som Counter Strike og Søg og Ødelæg, hver med to variationer: Kode og Hold. Bomben inkluderer en tilpasselig indstillingsmenu, der tillader hurtige justeringer uden at skulle omprogrammere Arduino'en.
 
 # Funktioner
 * Counter Strike Kode/hold
-* Search and destory Kode/Hold
-* Nem navigation i menuen
-* Skiftbare indstillinger på bomben
-* Låsbar menu i kamp
+* Søg og ødelæg Kode/Hold
+* Nem menu-navigation
+* Ændringsbare indstillinger på brættet
+* Låsbar menu under kamp
 
-Bemærk venligst, at jeg ikke er en professionel programmør eller designer. Dette projekt blev født ud af en passion for sjov og et ønske om at støtte en lokal airsoftbane med en ny bombesimulator. Koden og 3D-modellerne er måske ikke optimerede eller perfekte, men de "virker" til deres formål. Du er velkommen til at tilpasse og justere efter behov for at matche dine specifikke dele og krav, da dette projekt handler om kreativitet og fornøjelse.
+Bemærk, at jeg ikke er en professionel programmør eller designer. Dette projekt er født ud af en passion for sjov og ønsket om at støtte en lokal airsoftbane med en ny bombe-simulator. Koden og 3D-modellerne er måske ikke optimerede eller perfekte, men de "fungerer" til deres tilsigtede formål. Du er velkommen til at tilpasse og justere efter behov for at passe til dine specifikke dele og krav, da dette projekt handler om kreativitet og fornøjelse.
+
 ## Indholdsfortegnelse
-- [Gamemodes](#gamemode)
+- [Spiltilstande](#spiltilstand)
     - [Counter Strike](#counter-strike)
         - [Kode](#kode)
         - [Hold](#hold)
-    - [Search and destory](#search-and-destory)
-- [Settings](#settings)
-    - [Gamemode](#gamemode)
-    - [Time to plant](#time-to-plant)
-    - [Time to Defuse](#time-to-defuse)
-    - [Code Lenght](#code-length)
-    - [Mistake](#mistake)
-    - [Delay for code](#delay-for-numbers)
-    - [Auto check](#auto-check)
-    - [Locked menu](#locked-menu)
-    - [Buzzer pitch](#buzzer-pitch)
-    - [Back light](#back-light)
-    - [Save as default](#save-as-default)
-    - [Factory reset](#factory-reset)
-- [Presets](#presets)
-    - [User Default](#user-default)
+    - [Søg og ødelæg](#søg-og-ødelæg)
+- [Indstillinger](#indstillinger)
+    - [Spiltilstand](#spiltilstand)
+    - [Tid til plantning](#tid-til-plantning)
+    - [Tid til afmontering](#tid-til-afmontering)
+    - [Kodelængde](#kodelængde)
+    - [Fejl](#fejl)
+    - [Forsinkelse for koder](#forsinkelse-for-koder)
+    - [Automatisk tjek](#automatisk-tjek)
+    - [Låst menu](#låst-menu)
+    - [Summerfrekvens](#summerfrekvens)
+    - [Baggrundsbelysning](#baggrundsbelysning)
+    - [Gem som standard](#gem-som-standard)
+    - [Fabriksindstilling](#fabriksindstilling)
+- [Forudindstillinger](#forudindstillinger)
+    - [Brugerstandard](#brugerstandard)
     - [GM/TTP/TTD/CL/DFN/M](#gmttpttdcldfnm)
 
-## Gamemodes
+## Spiltilstande
 * ### Counter Strike
-CS Code is a gamemode like the video game counter strike where you have 2 teams one attacking team and one defending team where the goal for the attacking team is plant the bomb on a Bomb site/Location, where the defending team have to stop the attackers from planting the bomb or defuse the bomb if the attacking team have planted the bomb on the bomb site
-* ##### Code
-Code is a gamemode in which a random code is generated for the bomb. Players must input this code into the bomb to arm it. The bomb's code will be displayed in the top left corner, revealing one number at a time until the entire code is entered to either plant or defuse the bomb.
+CS Kode er en spiltilstand som videospillet Counter Strike, hvor der er 2 hold: et angrebshold og et forsvarshold. Målet for angrebsholdet er at plante bomben på et bombested/lokation, hvor forsvarsholdet skal forhindre angriberne i at plante bomben eller afmontere bomben, hvis angrebsholdet har plantet bomben på bombestedet.
+* ##### Kode
+Kode er en spiltilstand, hvor der genereres en tilfældig kode til bomben. Spillerne skal indtaste denne kode i bomben for at aktivere den. Bombens kode vises i øverste venstre hjørne og afslører et tal ad gangen, indtil hele koden er indtastet, enten for at plante eller afmontere bomben.
 
 ```bash
 +--------------------+
@@ -47,16 +48,16 @@ Code is a gamemode in which a random code is generated for the bomb. Players mus
 |Y                   |
 +--------------------+
 ```
-Timer is how much time left
+Timer viser, hvor meget tid der er tilbage.
 
-X is the number displayed in the top left connor
+X er det viste tal i øverste venstre hjørne.
 
-Y is the code entered so far
+Y er den indtastede kode indtil videre.
 
-DisplayInfo can display some text for the players to read for example it could be Bomb planted or Wrong code
+DisplayInfo kan vise tekst til spillerne, f.eks. "Bomben er plantet" eller "Forkert kode".
 
 * #### Hold
-Hold is a gamemode wehre you have to hold a button on the keypad to start arm the bomb, it will show a prograss bar on the display of the bomb where it slowly ticks up to 100% armed and the bomb will go into defuse mode where the defending team will have to hold the botton to defuse it and stop the attacking team from winning, if you let go of the botton the prograss will slowly go down to 0% again
+Hold er en spiltilstand, hvor du skal holde en knap på tastaturet nede for at begynde at aktivere bomben. Det vil vise en fremskridtslinje på bombens display, hvor den langsomt når 100% aktiv, og bomben går i afmonteringsmode, hvor forsvarsholdet skal holde knappen nede for at afmontere den og forhindre angriberholdet i at vinde. Hvis du slipper knappen, vil fremskridtslinjen langsomt gå ned til 0%.
 
 ```bash
 +--------------------+
@@ -66,60 +67,96 @@ Hold is a gamemode wehre you have to hold a button on the keypad to start arm th
 | #############----- |
 +--------------------+
 ```
-Timer is how much time left
+Timer viser, hvor meget tid der er tilbage.
 
-DisplayInfo can display some text for the players to read for example it could be Bomb planted or Wrong code
+DisplayInfo kan vise tekst til spillerne, f.eks. "Bomben er plantet" eller "Forkert kode".
 
-The ### is the progress of the bomb planted and the --- is how much is left
+### Hovedmenu
+- ## Start
+  Start er knappen, der starter alt i bomben. Når du trykker på den, tager den dig til en klar-skærm, hvor spillerne kan trykke på en hvilken som helst knap for at starte timeren på bomben, når de hører starttonen fra banen.
+  ```bash
+  +--------------------+
+  |                    |
+  |  Tryk på en hvilken |
+  |  som helst knap på  |
+  |       tastaturet    |
+  +--------------------+
+  ```
+  Ved at trykke på en hvilken som helst knap på tastaturet starter bombens timer. Hvis du vil gå tilbage, kan du altid trykke på knappen for at gå tilbage, hvis du har brug for det.
+- ## Info
+  Infoskærmen viser nogle grundlæggende oplysninger om bomben med nyttige oplysninger om opsætningen.
+  ```bash
+  +--------------------+
+  |Spiltilstand: CS KODE|
+  |Tid til plantning: 10|
+  |Tid til afmontering:10|
+  |Kodelængde: 4        |
+  +--------------------+
+  ```
+  Kodelængden i infoskærmen kan også vise den tid, det tager at plante bomben i Hold-spiltilstand.
+- ## Indstillinger
+  Denne menu er, hvor du kan ændre værdierne for bomben med, hvor lang tid du har til at plante eller afmontere bomben, og alt andet for det.
 
-- # Settings
-* #### Gamemode
-    This setting allowes you can change what game mode you wanna play on the bomb,
-    0 = CS Code,
+  I indstillingsmenuen, hvis du vil gemme indstillingen som standard, skal du rulle helt ned, indtil du ser
+
+ en knap kaldet "Gem som standard". Dette gør, at de nuværende indstillinger bliver bootet op med disse indstillinger næste gang, du bruger bomben.
+
+  Du kan finde en liste over alle indstillingerne [her](Settings), hvor du kan læse mere om selve indstillingerne.
+
+- ## Forudindstillinger
+  Denne menu bruges til nogle hurtige indstillinger for bomben, så du hurtigt kan ændre dem på farten uden at skulle gå ind i indstillingerne og gøre det manuelt.
+
+  Du vil se en liste over elementer med nogle forudindstillinger, formatet det vises i, kalder jeg [GM/TTP/TTD/CL/DFN/M](#gmttpttdcldfnm). Dette betyder Spiltilstand/TidTilPlantning/TidTilAfmontering/KodeLængde/ForsinkelseForKoder/Fejl
+
+- # Indstillinger
+* #### Spiltilstand
+    Denne indstilling giver dig mulighed for at ændre, hvilken spiltilstand du vil spille på bomben.
+    0 = CS Kode,
     1 = CS Hold,
-    2 = SAD Code,
+    2 = SAD Kode,
     3 = SAD Hold
-* #### Time to Plant
-    This is the time the attacking team have to plant the bomb before the timer runs out and they will lose, 
-    This setting can be 1min to 60mins long
-* #### Time to Defuse
-    This is the time the defending team have to defuse the bomb before it blows up and the attacking team will win, 
-    This setting can be 1min to 60mins long
-* #### Code length
-    This setting changes the lenght of the code on the bomb 
-    This value ranges from 1 to 20 character long
-* #### Mistake
-    This is a setting that gives the players a punishment if they type the wrong code in it can be turned off by changing it to 0
-    This value range from 0 to 60sec
-* #### Delay for numbers
-    This setting puts a delay on the numbers before they get displayed on the screen to make the arming and disarming of the bomb longer
-    This value ranges from 0 to 10sec
-* #### Auto check
-    Auto check is a setting that checks the code if its right or wrong along the way when you are trying to plant it or defuse it
-    This setting can be ON or OFF
-* #### Locked menu
-    Locked menu is a importen setting if you dont want players you go in the menu by acident or change values by mistake
-    If ON you wont be able to press the Knob to go back in the menu but you need to press * and # at the same time to unlock the bomb again
-    This value can be ON or OFF
-  * #### Buzzer pitch
-    The buzzer pitch can go from 0 to 255 and it changes the pitch of the buzzer so the user of the bomb can pick a sound they like :P
-    This value ranges from 0 to 255
-* #### Back light
-    Back light allowes you to turn on or off the back light of the LCD display
-    This value can be ON or OFF
-* #### Save as default
-    Save as default will save all of the setting on the bomb right now to its memory and load it in when the bomb is booted up and have it in the preset menu
-* #### Factory reset
-    Factory reset will turn all of the settings back to the default settings that it came with originally
-# Presets
-Presets is a menu for preset settings for gamemodes where its quick way of changing settings without going into setting and doing all manually
-* #### User Default
-Uses the default setting that is used when booting up
+* #### Tid til plantning
+    Dette er den tid, angrebsholdet har til at plante bomben, inden timeren løber ud, og de vil tabe.
+    Denne indstilling kan være 1 minut til 60 minutter lang.
+* #### Tid til afmontering
+    Dette er den tid, forsvarsholdet har til at afmontere bomben, før den sprænger, og angrebsholdet vil vinde.
+    Denne indstilling kan være 1 minut til 60 minutter lang.
+* #### Kodelængde
+    Denne indstilling ændrer længden af koden på bomben.
+    Denne værdi spænder fra 1 til 20 tegn.
+* #### Fejl
+    Dette er en indstilling, der straffer spillerne, hvis de indtaster den forkerte kode. Den kan slås fra ved at ændre den til 0.
+    Denne værdi spænder fra 0 til 60 sekunder.
+* #### Forsinkelse for koder
+    Denne indstilling sætter en forsinkelse på numrene, før de vises på skærmen for at gøre aktivering og deaktivering af bomben længere.
+    Denne værdi spænder fra 0 til 10 sekunder.
+* #### Automatisk tjek
+    Automatisk tjek er en indstilling, der tjekker koden undervejs, når du forsøger at plante eller afmontere den.
+    Denne indstilling kan være TÆNDT eller SLUKKET.
+* #### Låst menu
+    Låst menu er en vigtig indstilling, hvis du ikke vil have, at spillere går ind i menuen ved et uheld eller ændrer værdier ved en fejl.
+    Hvis TÆNDT, kan du ikke trykke på knappen for at gå tilbage i menuen, men du skal trykke på * og # samtidigt for at låse bomben op igen.
+    Denne værdi kan være TÆNDT eller SLUKKET.
+* #### Summerfrekvens
+    Summerfrekvensen kan være fra 0 til 255, og den ændrer summerens frekvens, så brugeren af bomben kan vælge en lyd, de kan lide :P
+    Denne værdi spænder fra 0 til 255.
+* #### Baggrundsbelysning
+    Baggrundsbelysning giver dig mulighed for at tænde eller slukke for baggrundsbelysningen på LCD-skærmen.
+    Denne værdi kan være TÆNDT eller SLUKKET.
+* #### Gem som standard
+    Gem som standard vil gemme alle indstillingerne på bomben lige nu i dens hukommelse og indlæse dem, når bomben startes, og have dem i forudindstillingsmenuen.
+* #### Fabriksindstilling
+    Fabriksindstilling vil nulstille alle indstillingerne til de oprindelige standardindstillinger.
+
+# Forudindstillinger
+Forudindstillinger er en menu med forudindstillede indstillinger for spiltilstande, hvor det er en hurtig måde at ændre indstillinger på uden at skulle gå ind i indstillingerne og gøre alt manuelt.
+* #### Brugerstandard
+Bruger standardindstillingerne, der bruges ved opstart.
 * #### GM/TTP/TTD/CL/DFN/M
-This is the format i use to say the presets without typing everything out,
-GM = the Gamemode,
-TTP = Time to Plant,
-TTD = Time to Defuse,
-CL = Code lenght,
-DFN = Delay for numbers,
-M = Mistake
+Dette er det format, jeg bruger til at sige forudindstillingerne uden at skrive alt ud,
+GM = Spiltilstand,
+TTP = Tid til plantning,
+TTD = Tid til afmontering,
+CL = Kodelængde,
+DFN = Forsinkelse for koder,
+M = Fejl
