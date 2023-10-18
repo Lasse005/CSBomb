@@ -887,7 +887,7 @@ void supportAction() {
   scrollingEnabled= false ;
   editMode= true ;
   lcd.setCursor(0,0);
-  lcd.print("Support points/linksGithub.com/lasse_005Lasse2466@gmail.com /CSGOBomb for manual");
+  lcd.print("User manual for bombGithub.com/lasse_005                    /CSBomb             ");
 }
 
 void factoryResetAction() {
