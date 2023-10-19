@@ -37,7 +37,7 @@ int timeToPlant = 10; // The amount of time you have to plant the bomb (10mins)
 int timeToDefuse = 10; // The amount of time you have to defuse the bomb (10mins)
 int codeLenght = 4; // Lenght of the code (4)
 int gamemode = 0; // This creates a modifiable character array. //TODO
-int buzzerPitch = 2; // Pitch/audio of the buzzer (5)
+int buzzerVolume = 255; // Volume of the buzzer (255)
 int mistakeTime = 0; // Removes time from counter as a punchment for doing it wrong (0sec)
 int delayForNumbers = 2; // The amount of delay for the next number to be showed in code gamemodes (2sec)
 bool autoCheck = true; // Auto checks if the code is right in the end so you dont need to press # to check it manually (True)
@@ -94,6 +94,7 @@ void useLastProfileAction();
 void supportAction();
 void saveSettings();
 void factoryResetAction();
+void DebugLog();
 
 void setTimeCodes(int timeToPlant, int timeToDefuse);
 
@@ -112,7 +113,7 @@ MenuItem settingMenu[] = {
   {"Time to plant", &timeToPlant, nullptr, []() { changingValueAction("Time to plant", timeToPlant, 0, 60, " Mins", 1); }},
   {"Time to defuse", &timeToDefuse, nullptr, []() { changingValueAction("Time to defuse", timeToDefuse, 0, 60, " Mins", 2); }},
   {"Code length", &codeLenght, nullptr, []() { changingValueAction("Code lenght", codeLenght, 0, 20, "", 3); }},
-  {"Buzzer Pitch", &buzzerPitch, nullptr, []() { changingValueAction("Buzzer pitch", buzzerPitch, 0, 255, "", 4); }},
+  {"Buzzer Pitch", &buzzerVolume, nullptr, []() { changingValueAction("Buzzer pitch", buzzerVolume, 0, 255, "", 4); }},
   {"Mistake", &mistakeTime, nullptr, []() { changingValueAction("Mistake punishment", mistakeTime, 0, 60, " Sec", 5); }},
   {"Delay for numbers", &delayForNumbers, nullptr, []() { changingValueAction("Delay for numbers", delayForNumbers, 0, 10, "", 6); }},
   {"Auto check", nullptr, &autoCheck, autoCheckAction},
@@ -207,13 +208,13 @@ void displayCode() {
 void readKeypad() {
   keypressed = myKeypad.getKey(); // Detect keypad press
 
-  if (gameState != GAME_NOT_STARTED || BOMB_DEFUSED) {
+  if (gameState != GAME_NOT_STARTED) {
     if (keypressed != NO_KEY) {  // Check if a valid key is pressed
       String konv = String(keypressed);
       loadingAnimationForCode = true;
 
       digitalWrite(ledPin, HIGH);
-      analogWrite(buzzerPin, buzzerPitch);
+      analogWrite(buzzerPin, buzzerVolume);
       delay(100);
       digitalWrite(ledPin, LOW);
       analogWrite(buzzerPin, 0);
@@ -250,7 +251,7 @@ void blinking(int blinkInterval) {
     previousMillis = currentMillis;
     ledState = !ledState;
     digitalWrite(ledPin, ledState);
-    analogWrite(buzzerPin, ledState ? buzzerPitch : 0);
+    analogWrite(buzzerPin, ledState ? buzzerVolume : 0);
   }
 }
 
@@ -259,6 +260,7 @@ int lerp(int start, int end, float t) {
 }
 
 void timer() {
+  //Checks if the bomb is planted and if the game is over
   if (gameState == BOMB_PLANTED && defuseTime > 0) {
     unsigned long currentMillis = millis();
     if (defuseTime <= 60) {
@@ -330,7 +332,7 @@ void saveSettingsToEEPROM() {
   EEPROM.put(0, timeToPlant);
   EEPROM.put(sizeof(int), timeToDefuse);
   EEPROM.put(2 * sizeof(int), codeLenght);
-  EEPROM.put(3 * sizeof(int), buzzerPitch);
+  EEPROM.put(3 * sizeof(int), buzzerVolume);
   EEPROM.put(4 * sizeof(int), mistakeTime);
   EEPROM.put(5 * sizeof(int), delayForNumbers);
   EEPROM.get(6 * sizeof(int), autoCheck);
@@ -342,7 +344,7 @@ void loadSettingsFromEEPROM() {
   EEPROM.get(0, timeToPlant);
   EEPROM.get(sizeof(int), timeToDefuse);
   EEPROM.get(2 * sizeof(int), codeLenght);
-  EEPROM.get(3 * sizeof(int), buzzerPitch);
+  EEPROM.get(3 * sizeof(int), buzzerVolume);
   EEPROM.get(4 * sizeof(int), mistakeTime);
   EEPROM.get(5 * sizeof(int), delayForNumbers);
   EEPROM.get(6 * sizeof(int), autoCheck);
@@ -451,7 +453,7 @@ void setup() {
   lcd.print("Odense Airsoft");
   lcd.setCursor(4, 2);
   lcd.print("CSGO Bomb V1");
-  delay(1000);
+  delay(2000);
   gameState = GAME_NOT_STARTED;
   updateMenu();
 }
@@ -488,79 +490,81 @@ void loop() {
   }
 
   //Checks if code is right
-  if (gameState != GAME_NOT_STARTED && !isPaused) {
-    lcd.setCursor(0, 3);
-    lcd.print(pad);
+  if (isPaused == false) {
+    if (gameState != GAME_NOT_STARTED) {
+      lcd.setCursor(0, 3);
+      lcd.print(pad);
 
-    timer();
-    displayCode();
+      timer();
+      displayCode();
 
-    if ((autoCheck && keypressed != '#') || keypressed == '#') {
-      if (pad.length() == bombcode.length()) {  // Compare only when the input length matches bomb code length
-        if (pad == bombcode) {
-          // Correct code
-          if (gameState == BOMB_PLANTED) {
-            // Bomb defused
-            pad="";
-            mainMenu[0] = {"Start", nullptr, nullptr, startAction};
-            mainMenu[1] = {"Info", nullptr, nullptr, infoAction};
-            mainMenu[2] = {"Setting", nullptr, nullptr, settingsAction};
-            mainMenu[3] = {"Presets", nullptr, nullptr, presetsAction};
-            mainMenu[4] = {"Support", nullptr, nullptr, supportAction};
+      if ((autoCheck && keypressed != '#') || keypressed == '#') {
+        if (pad.length() == bombcode.length()) {  // Compare only when the input length matches bomb code length
+          if (pad == bombcode) {
+            // Correct code
+            if (gameState == BOMB_PLANTED) {
+              // Bomb defused
+              pad="";
+              mainMenu[0] = {"Start", nullptr, nullptr, startAction};
+              mainMenu[1] = {"Info", nullptr, nullptr, infoAction};
+              mainMenu[2] = {"Setting", nullptr, nullptr, settingsAction};
+              mainMenu[3] = {"Presets", nullptr, nullptr, presetsAction};
+              mainMenu[4] = {"Support", nullptr, nullptr, supportAction};
 
-            loadingAnimationForCode = false;
-            gameState = BOMB_DEFUSED;
-            editMode = true;
-            scrollingEnabled = false;
+              loadingAnimationForCode = false;
+              gameState = BOMB_DEFUSED;
+              editMode = true;
+              scrollingEnabled = false;
 
-            //Stop led and buzzer
-            digitalWrite(ledPin, LOW);
-            analogWrite(buzzerPin, 0);
+              //Stop led and buzzer
+              digitalWrite(ledPin, LOW);
+              analogWrite(buzzerPin, 0);
 
-            //Display text
-            lcd.clear();
-            lcd.setCursor(5, 0);
-            lcd.print("Game over!");
-            lcd.setCursor(4, 1);
-            lcd.print("Bomb defused");
+              //Display text
+              lcd.clear();
+              lcd.setCursor(5, 0);
+              lcd.print("Game over!");
+              lcd.setCursor(4, 1);
+              lcd.print("Bomb defused");
 
-            int minutes = defuseTime / 60;
-            int seconds = defuseTime % 60;
-            lcd.setCursor(7, 2);
-            if (minutes < 10) {
-              lcd.print("0");
+              int minutes = defuseTime / 60;
+              int seconds = defuseTime % 60;
+              lcd.setCursor(7, 2);
+              if (minutes < 10) {
+                lcd.print("0");
+              }
+              lcd.print(minutes);
+              lcd.print(":");
+
+              if (seconds < 10) {
+                lcd.print("0");
+              }
+              lcd.print(seconds);
+              lcd.print("s");
+            } else {
+              // Bomb planted
+              pad="";
+              displayText(0,1,"Bomb planted", 5000);
+              lcd.setCursor(0, 3);
+              pad = ("                    ");  // Clear the pad string
+              lcd.setCursor(0, 3);
+              lcd.print(pad);
+              gameState = BOMB_PLANTED;
             }
-            lcd.print(minutes);
-            lcd.print(":");
-
-            if (seconds < 10) {
-              lcd.print("0");
+          } else {
+            // Incorrect code
+            if (gameState == BOMB_PLANTED) {
+              defuseTime -= mistakeTime;
+              defuseTime = max(defuseTime, 0);
+            } else {
+              plantTime -= mistakeTime;
+              plantTime = max(plantTime, 0);
             }
-            lcd.print(seconds);
-            lcd.print("s");
-          } else {
-            // Bomb planted
-            pad="";
-            displayText(0,1,"Bomb planted", 5000);
             lcd.setCursor(0, 3);
-            pad = ("                    ");  // Clear the pad string
-            lcd.setCursor(0, 3);
-            lcd.print(pad);
-            gameState=BOMB_PLANTED;
+            lcd.print("                    ");  // Clear the line
+            pad = "";  // Clear the pad
+            displayText(0,1, "Wrong Code", 3000);
           }
-        } else {
-          // Incorrect code
-          if (gameState == BOMB_PLANTED) {
-            defuseTime -= mistakeTime;
-            defuseTime = max(defuseTime, 0);
-          } else {
-            plantTime -= mistakeTime;
-            plantTime = max(plantTime, 0);
-          }
-          lcd.setCursor(0, 3);
-          lcd.print("                    ");  // Clear the line
-          pad = "";  // Clear the pad
-          displayText(0,1, "Wrong Code", 3000);
         }
       }
     }
@@ -568,8 +572,7 @@ void loop() {
 
   //Menu button handleing
   if (isLocked == false) {
-    if (scrollingEnabled != false) {
-      if (digitalRead(upButton) == LOW) {
+    if (digitalRead(upButton) == LOW) {
         if (selectedMenuItem > 0 && scrollingEnabled) {
           selectedMenuItem--;
           if (selectedMenuItem < menuStartIndex) {
@@ -577,50 +580,112 @@ void loop() {
           }
           delay(100);
           updateMenu();
+      } else if (editMode) {
+        switch(editingSetting){
+        case 1:
+          {
+            timeToPlant = min(timeToPlant + 1, 60); // Decrement and limit the value
+            changeValueMenu("Time to plant", timeToPlant, 0, 60, " Mins", 1);
+            break;
+          };
+        case 2:
+        {
+          timeToDefuse = min(timeToDefuse + 1, 60); // Decrement and limit the value
+          changeValueMenu("Time to defuse", timeToDefuse, 0, 60, " Mins", 2);
+          break;
+        };
+        case 3:
+        {
+          codeLenght = min(codeLenght + 1, 20); // Decrement and limit the value
+          changeValueMenu("Code lenght", codeLenght, 0, 20, " ", 3);
+          break;
+        };
+        case 4:
+        {
+          buzzerVolume = min(buzzerVolume + 1, 255); // Decrement and limit the value
+          changeValueMenu("Buzzer pitch", buzzerVolume, 0, 255, " ", 4);
+          analogWrite(buzzerPin, buzzerVolume);
+          delay(100);
+          analogWrite(buzzerPin, 0);
+          break;
+        };
+        case 5:
+        {
+          mistakeTime = min(mistakeTime + 1, 30); // Decrement and limit the value
+          changeValueMenu("Mistake punishment", mistakeTime, 0, 30, " sec", 5);
+          break;
+        };
+        case 6:
+        {
+          delayForNumbers = min(delayForNumbers + 1, 30); // Decrement and limit the value
+          changeValueMenu("Delay for numbers", delayForNumbers, 0, 30, " sec", 6);
+          break;
+        };
+        case 7:
+        {
+          gamemode = min(gamemode + 1, 3); // Decrement and limit the value
+          changeValueMenu("Gamemodes", gamemode, 0, 3, "", 7);
+          break;
+        };
+        }
+        delay(100);
+      }
+    }
+  
+    if (digitalRead(downButton) == LOW) {
+      
+      if (selectedMenuItem < menuMaxLenght) {
+        if (currentMenu[selectedMenuItem + 1].name != NULL && scrollingEnabled) {
+          selectedMenuItem++;
+          if (selectedMenuItem >= menuStartIndex + maxVisibleItems) {
+            menuStartIndex++;
+          }
+          delay(100);
+          updateMenu();
         } else if (editMode) {
           switch(editingSetting){
           case 1:
             {
-              timeToPlant = min(timeToPlant + 1, 60); // Decrement and limit the value
+              timeToPlant = max(timeToPlant - 1, 0); // Decrement and limit the value
               changeValueMenu("Time to plant", timeToPlant, 0, 60, " Mins", 1);
               break;
             };
           case 2:
           {
-            timeToDefuse = min(timeToDefuse + 1, 60); // Decrement and limit the value
+            timeToDefuse = max(timeToDefuse - 1, 0); // Decrement and limit the value
             changeValueMenu("Time to defuse", timeToDefuse, 0, 60, " Mins", 2);
             break;
           };
           case 3:
           {
-            codeLenght = min(codeLenght + 1, 20); // Decrement and limit the value
+            codeLenght = max(codeLenght - 1, 0); // Decrement and limit the value
             changeValueMenu("Code lenght", codeLenght, 0, 20, " ", 3);
             break;
           };
           case 4:
           {
-            buzzerPitch = min(buzzerPitch + 1, 255); // Decrement and limit the value
-            changeValueMenu("Buzzer pitch", buzzerPitch, 0, 255, " ", 4);
-            analogWrite(buzzerPin, buzzerPitch);
+            buzzerVolume = max(buzzerVolume - 1, 0); // Decrement and limit the value
+            changeValueMenu("Buzzer Volume", buzzerVolume, 0, 255, " ", 4);
+            analogWrite(buzzerPin, buzzerVolume);
             delay(100);
             analogWrite(buzzerPin, 0);
             break;
           };
           case 5:
           {
-            mistakeTime = min(mistakeTime + 1, 30); // Decrement and limit the value
+            mistakeTime = max(mistakeTime - 1, 0); // Decrement and limit the value
             changeValueMenu("Mistake punishment", mistakeTime, 0, 30, " sec", 5);
             break;
           };
           case 6:
           {
-            delayForNumbers = min(delayForNumbers + 1, 30); // Decrement and limit the value
+            delayForNumbers = max(delayForNumbers - 1, 0); // Decrement and limit the value
             changeValueMenu("Delay for numbers", delayForNumbers, 0, 30, " sec", 6);
             break;
           };
           case 7:
           {
-            gamemode = min(gamemode + 1, 3); // Decrement and limit the value
+            gamemode = max(gamemode - 1, 0); // Decrement and limit the value
             changeValueMenu("Gamemodes", gamemode, 0, 3, "", 7);
             break;
           };
@@ -628,118 +693,59 @@ void loop() {
           delay(100);
         }
       }
-    
-      if (digitalRead(downButton) == LOW) {
-        
-        if (selectedMenuItem < menuMaxLenght) {
-          if (currentMenu[selectedMenuItem + 1].name != NULL && scrollingEnabled) {
-            selectedMenuItem++;
-            if (selectedMenuItem >= menuStartIndex + maxVisibleItems) {
-              menuStartIndex++;
-            }
-            delay(100);
-            updateMenu();
-          } else if (editMode) {
-            switch(editingSetting){
-            case 1:
-              {
-                timeToPlant = max(timeToPlant - 1, 0); // Decrement and limit the value
-                changeValueMenu("Time to plant", timeToPlant, 0, 60, " Mins", 1);
-                break;
-              };
-            case 2:
-            {
-              timeToDefuse = max(timeToDefuse - 1, 0); // Decrement and limit the value
-              changeValueMenu("Time to defuse", timeToDefuse, 0, 60, " Mins", 2);
-              break;
-            };
-            case 3:
-            {
-              codeLenght = max(codeLenght - 1, 0); // Decrement and limit the value
-              changeValueMenu("Code lenght", codeLenght, 0, 20, " ", 3);
-              break;
-            };
-            case 4:
-            {
-              buzzerPitch = max(buzzerPitch - 1, 0); // Decrement and limit the value
-              changeValueMenu("Buzzer pitch", buzzerPitch, 0, 255, " ", 4);
-              analogWrite(buzzerPin, buzzerPitch);
-              delay(100);
-              analogWrite(buzzerPin, 0);
-              break;
-            };
-            case 5:
-            {
-              mistakeTime = max(mistakeTime - 1, 0); // Decrement and limit the value
-              changeValueMenu("Mistake punishment", mistakeTime, 0, 30, " sec", 5);
-              break;
-            };
-            case 6:
-            {
-              delayForNumbers = max(delayForNumbers - 1, 0); // Decrement and limit the value
-              changeValueMenu("Delay for numbers", delayForNumbers, 0, 30, " sec", 6);
-              break;
-            };
-            case 7:
-            {
-              gamemode = max(gamemode - 1, 0); // Decrement and limit the value
-              changeValueMenu("Gamemodes", gamemode, 0, 3, "", 7);
-              break;
-            };
-            }
-            delay(100);
-          }
-        }
-      }
     }
-    
-    if (digitalRead(selectButton) == LOW) {
-      const MenuItem selectedItem = currentMenu[selectedMenuItem];
-      updateMenu();
+  }
+  
+  if (digitalRead(selectButton) == LOW) {
+    const MenuItem selectedItem = currentMenu[selectedMenuItem];
+    updateMenu();
 
-      
-      if (editMode) {
-        // Handle saving the edited value
-        scrollingEnabled = true;
-        editMode = false;
-        isPaused = false;
-        editingSetting= 0 ;
-        updateMenu();
-      } else {
-        selectedItem.action(); // Call the associated action function
-      }
-      
-      digitalWrite(ledPin, HIGH);
-      analogWrite(buzzerPin, buzzerPitch);
-      delay(100);
-      digitalWrite(ledPin, LOW);
-      analogWrite(buzzerPin, 0);
-      
-      delay(200);
+    
+    if (editMode) {
+      // Handle saving the edited value
+      Serial.println(gameState);
+      scrollingEnabled = true;
+      editMode = false;
+      isPaused = true;
+      editingSetting= 0 ;
+      updateMenu();
+    } else {
+      selectedItem.action(); // Call the associated action function
     }
+    
+    digitalWrite(ledPin, HIGH);
+    analogWrite(buzzerPin, buzzerVolume);
+    delay(100);
+    digitalWrite(ledPin, LOW);
+    analogWrite(buzzerPin, 0);
+    
+    delay(200);
   }
 }
 
 void startAction() {
   Serial.println("Start action");
   pad="";
-  if (gameState == GAME_NOT_STARTED || isPaused) {
+  if (gameState == GAME_NOT_STARTED) {
     defuseTime = timeToDefuse*60;
     plantTime = timeToPlant*60;
     gameState = GAME_STARTED;
     editMode = true;
+    isPaused = false;
+    DebugLog();
 
     if (gamemode == 0) {
       getBombCode();
       
-      lcd.clear();
       scrollingEnabled = false;
       gameState = GAME_STARTED;
+      Serial.println("CS Code");
 
     }
   } else {
     Serial.println("Game is started");
-    isPaused = true;
+    DebugLog();
+    editMode = true;
   }
 
   mainMenu[0] = {"Continue", nullptr, nullptr, startAction};
@@ -765,6 +771,7 @@ void resetGameAction() {
   defuseTime = timeToDefuse*60;
   plantTime = timeToPlant*60;
   updateMenu(); // Update the menu display
+  DebugLog();
 }
 
 void infoAction() {
@@ -894,7 +901,7 @@ void factoryResetAction() {
   timeToPlant = 10; // Initialize with a default value
   timeToDefuse = 10; // Initialize with a default value
   codeLenght = 8;
-  buzzerPitch = 5;
+  buzzerVolume = 5;
   mistakeTime = 2;
   delayForNumbers = 2;
   lockedMenu = false;
@@ -908,4 +915,15 @@ void setTimeCodes(int plantTime, int defuseTime) {
     backAction();
     timeToDefuse = defuseTime;
     timeToPlant = plantTime;
+}
+
+void DebugLog() {
+  Serial.print("Gamemode ");
+  Serial.println(gamemode);
+  Serial.print("IsPaused ");
+  Serial.println(isPaused);
+  Serial.print("Edit Mode ");
+  Serial.println(editMode);
+  Serial.print("GameState ");
+  Serial.println(gameState);
 }
