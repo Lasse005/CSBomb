@@ -33,6 +33,12 @@ Please note that I am not a professional programmer or designer. This project wa
 - [Presets](#presets)
     - [User Default](#user-default)
     - [GM/TTP/TTD/CL/DFN/M](#gmttpttdcldfnm)
+ 
+## TODO:
+| Function | Idea | Why |
+| :----: | :----: | :----: |
+| Gameover alarm | make sounds when gameover | To make it easyier to hear when the game is finished |
+| Danish translateion | Danish translation on the bomb | make it possiable for danish people to read without knowing english |
 
 ## Gamemodes
 * ### Counter Strike
