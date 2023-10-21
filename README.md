@@ -40,6 +40,8 @@ Please note that I am not a professional programmer or designer. This project wa
 | :----: | :----: | :----: |
 | Gameover alarm | make sounds when gameover | To make it easyier to hear when the game is finished |
 | Danish translateion | Danish translation on the bomb | make it possiable for danish people to read without knowing english |
+| Hold gamemode | Make a second gamemode | I would like to have a more simple gamemode that more people could jump into without thinking |
+| Search and destory | Another gamemode | Just so the field can have more gamemodes for the players to play :P |
 
 ## Gamemodes
 * ### Counter Strike
