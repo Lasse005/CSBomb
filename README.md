@@ -12,6 +12,7 @@ This project is an open-source airsoft bomb simulator inspired by CSGO, utilizin
 Please note that I am not a professional programmer or designer. This project was born out of a passion for fun and a desire to support a local airsoft field with a new bomb simulator. The code and 3D models may not be optimized or perfect, but they "work" for their intended purpose. Feel free to tweak and adjust as needed to match your specific parts and requirements, as this project is about creativity and enjoyment.
 
 ## Table of content
+- [Todo](#todo)
 - [Gamemodes](#gamemode)
     - [Counter Strike](#counter-strike)
         - [Code](#code)
@@ -33,6 +34,14 @@ Please note that I am not a professional programmer or designer. This project wa
 - [Presets](#presets)
     - [User Default](#user-default)
     - [GM/TTP/TTD/CL/DFN/M](#gmttpttdcldfnm)
+ 
+## TODO:
+| Function | Idea | Why |
+| :----: | :----: | :----: |
+| Gameover alarm | make sounds when gameover | To make it easyier to hear when the game is finished |
+| Danish translateion | Danish translation on the bomb | make it possiable for danish people to read without knowing english |
+| Hold gamemode | Make a second gamemode | I would like to have a more simple gamemode that more people could jump into without thinking |
+| Search and destory | Another gamemode | Just so the field can have more gamemodes for the players to play :P |
 
 ## Gamemodes
 * ### Counter Strike
