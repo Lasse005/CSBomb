@@ -43,6 +43,7 @@ int buzzerVolume = 255; // Volume of the buzzer (255)
 bool autoCheck = true; // Auto checks if the code is right in the end so you dont need to press # to check it manually (True)
 bool lockedMenu = false; // Locked Menu locks the menu ingame so player wont press it by mistake to unlock press * and # at the same time (False)
 bool backLight = true; // Backlight for the LCD Display idk why you would turn it off but here you go (True)
+bool lights = true; // Truns on or off a LED light above the keypad (True)
 
 //data tracking
 String pad; // Stores the data of the keypad
@@ -81,6 +82,7 @@ void changingValueAction(const char* text, int action, int min, int max, const c
 void saveAsPresetAction();
 void autoCheckAction();
 void lockedMenuAction();
+void lightsAction();
 void backLightAction();
 void useLastProfileAction();
 void supportAction();
@@ -111,6 +113,7 @@ MenuItem settingMenu[] = {
   {"Delay for numbers", &delayForNumbers, nullptr, []() { changingValueAction("Delay for numbers", delayForNumbers, 0, 10, " Sec", 6); }},
   {"Auto check", nullptr, &autoCheck, autoCheckAction},
   {"Locked menu", nullptr, &lockedMenu, lockedMenuAction},
+  {"Lights", nullptr, &lights, lightsAction},
   {"Back light", nullptr, &backLight, backLightAction},
   {"Support", nullptr, nullptr, supportAction}, // No value for this item
   {"Save as default", nullptr, nullptr, saveSettings},
@@ -136,6 +139,7 @@ int menuMaxLength = sizeof(mainMenu) / sizeof(mainMenu[0])-1;
 const int selectButton = 21;
 const int upButton = 20;
 const int downButton = 19;
+const int whiteLed = 22;
 const int ledPin = 4;
 const int buzzerPin = 5;
 
@@ -373,6 +377,7 @@ void saveSettingsToEEPROM() {
   EEPROM.put(7 * sizeof(int), autoCheck);
   EEPROM.put(8 * sizeof(int), lockedMenu);
   EEPROM.put(9 * sizeof(int), backLight);
+  EEPROM.put(10 * sizeof(int), lights);
 }
 
 void loadSettingsFromEEPROM() {
@@ -386,6 +391,7 @@ void loadSettingsFromEEPROM() {
   EEPROM.get(7 * sizeof(int), autoCheck);
   EEPROM.get(8 * sizeof(int), lockedMenu);
   EEPROM.get(9 * sizeof(int), backLight);
+  EEPROM.get(10 * sizeof(int), lights);
 }
 
 //Update menus
@@ -481,8 +487,14 @@ void setup() {
   pinMode(selectButton, INPUT_PULLUP);
   pinMode(upButton, INPUT_PULLUP);
   pinMode(downButton, INPUT_PULLUP);
+  pinMode(whiteLed, OUTPUT);
   pinMode(ledPin, OUTPUT);
   pinMode(buzzerPin, OUTPUT);
+
+  //lights
+  if (lights==true) {
+    digitalWrite(whiteLed, HIGH);
+  }
 
   //startup animation
   lcd.setCursor(3, 1);
@@ -885,6 +897,19 @@ void lockedMenuAction() {
     lockedMenu = false;
   }
   updateMenu();
+}
+
+void lightsAction() {
+  Serial.println("Lights action");
+  if (lights == false) {
+    lights = true;
+    digitalWrite(whiteLed, HIGH); // Turn on the backlight
+  }
+  else {
+    lights = false;
+    digitalWrite(whiteLed, LOW); // Turn off the backlight
+  }
+  updateMenu(); // Corrected function name
 }
 
 void backLightAction() {
